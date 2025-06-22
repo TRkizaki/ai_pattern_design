@@ -1,6 +1,6 @@
 ## Pattern Recognition Interactive Presentation
 
-> **Master’s Course Presentation** - Decision Methods & Clustering  
+> **Master’s Course Presentation** - Decision Methods & Clustering
 > **Status: Production Ready**
 
 ## Overview
@@ -47,8 +47,8 @@ conda create -n ai_pattern_design python=3.11 -y
 conda activate ai_pattern_design
 
 # 4. Install dependencies
-conda install -c conda-forge streamlit plotly scikit-learn pandas numpy matplotlib -y
-```
+conda install -c conda-forge jupyter streamlit plotly scikit-learn pandas numpy matplotlib -y
+``i
 
 ### **Launch Presentation**
 
@@ -108,12 +108,12 @@ ai_pattern_design/
 - **Performance metrics dashboard**
 - **Academic-quality visualizations**
 
-**Usage:**
+    **Usage:**
 
-```bash
-conda activate ai_pattern_design
-streamlit run streamlit_app.py
-```
+    ```bash
+    conda activate ai_pattern_design
+    streamlit run streamlit_app.py
+    ```
 
 ### **Mode 2: Standalone HTML Demo** 🔄 **Backup**
 
@@ -121,11 +121,11 @@ streamlit run streamlit_app.py
 - **Complete offline functionality**
 - **All algorithm demonstrations included**
 
-**Usage:**
+    **Usage:**
 
-```bash
-open interactive_demo.html
-```
+    ```bash
+    open interactive_demo.html
+    ```
 
 ### **Mode 3: Jupyter Notebook** 📚 **Optional**
 
@@ -133,11 +133,11 @@ open interactive_demo.html
 - **Step-by-step algorithm breakdown**
 - **Mathematical derivations**
 
-**Usage:**
+    **Usage:**
 
-```bash
-jupyter notebook notebooks/pattern_recognition_demo.ipynb
-```
+    ```bash
+    jupyter notebook notebooks/pattern_recognition_demo.ipynb
+    ```
 
 ## Algorithm Performance Summary
 
@@ -310,7 +310,7 @@ This project is created for educational purposes. Please cite appropriately if u
 - Review algorithm documentation
 - Engage with course instructor
 
------
+    -----
 
 ##  Quick Start Summary
 
