@@ -292,9 +292,27 @@ streamlit run streamlit_app.py --server.port 8502
 - Include system information and error messages
 - Provide steps to reproduce problems
 
-## License
+## 📄 License
 
-This project is created for educational purposes. Please cite appropriately if used in academic work.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+### What this means:
+- ✅ **Commercial use** - You can use this for commercial purposes
+- ✅ **Modification** - You can modify and adapt the code
+- ✅ **Distribution** - You can distribute the original or modified versions
+- ✅ **Private use** - You can use this privately
+- ✅ **Patent use** - You can use any patents that may be related
+
+### Requirements:
+- 📋 **License and copyright notice** - Include the original license and copyright notice
+
+### Limitations:
+- ❌ **Liability** - The author is not liable for any damages
+- ❌ **Warranty** - No warranty is provided
+
+## 🙏 Attribution
+
+If you use this project, we'd appreciate a link back to the original repository, though it's not required.
 
 ##  Support
 
