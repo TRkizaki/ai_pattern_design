@@ -1,26 +1,22 @@
 # streamlit_app.py
-
 # Pattern Recognition Interactive Presentation
-
-# Clean version with no special characters
+# Run with: streamlit run streamlit_app.py
 
 import streamlit as st
 import numpy as np
-
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
 from sklearn.datasets import make_classification, make_blobs
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
-from sklearn.cluster import KMeans
+from sklearn.cluster import KMeans, DBSCAN
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import silhouette_score
 import pandas as pd
 
 # Page configuration
-
 st.set_page_config(
     page_title="Pattern Recognition Demo",
     page_icon="🤖",
@@ -28,51 +24,84 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS
-
+# Custom CSS for better presentation
 st.markdown(
     """
-
-            <style>
-            .main-header {
-                font-size: 3rem;
-                color: #1f77b4;
-                text-align: center;
-                margin-bottom: 2rem;
-            }
-
-            .section-header {
-                font-size: 2rem;
-                color: #ff7f0e;
-                border-bottom: 3px solid #ff7f0e;
-                padding-bottom: 0.5rem;
-                margin: 2rem 0 1rem 0;
-            }
-
-            .metric-container {
-                background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-                                            padding: 1rem;
-                                            border-radius: 10px;
-                                            color: white;
-                                            text-align: center;
-                                            margin: 0.5rem 0;
-                                            }
-
-                                            .algorithm-info {
-                                                background-color: #f0f2f6;
-                                                padding: 1rem;
-                                                border-left: 5px solid #1f77b4;
-                                                border-radius: 5px;
-                                                margin: 1rem 0;
-                                            }
-                                            </style>
-
-                                            """,
+<style>
+    .main-header {
+        font-size: 3rem;
+        color: #1f77b4;
+        text-align: center;
+        margin-bottom: 2rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .section-header {
+        font-size: 2rem;
+        color: #ff7f0e;
+        border-bottom: 3px solid #ff7f0e;
+        padding-bottom: 0.5rem;
+        margin: 2rem 0 1rem 0;
+    }
+    
+    .metric-container {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        padding: 1rem;
+        border-radius: 10px;
+        color: white;
+        text-align: center;
+        margin: 0.5rem 0;
+    }
+    
+    .algorithm-info {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        border: 2px solid #4299e1;
+        border-left: 6px solid #4299e1;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(66, 153, 225, 0.15);
+        color: #2d3748;
+    }
+    
+    .algorithm-info h3 {
+        color: #2b6cb0;
+        margin-bottom: 12px;
+        font-size: 1.2em;
+        font-weight: 600;
+    }
+    
+    .algorithm-info p {
+        margin-bottom: 8px;
+        color: #4a5568;
+        line-height: 1.6;
+    }
+    
+    .algorithm-info strong {
+        color: #2d3748;
+        font-weight: 600;
+    }
+    
+    .stButton > button {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 20px;
+        padding: 0.5rem 2rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+</style>
+""",
     unsafe_allow_html=True,
 )
 
 # Main title
-
 st.markdown(
     '<h1 class="main-header">🤖 Pattern Recognition Interactive Demo</h1>',
     unsafe_allow_html=True,
@@ -83,7 +112,6 @@ st.markdown(
 )
 
 # Sidebar navigation
-
 st.sidebar.title("🧭 Navigation")
 page = st.sidebar.selectbox(
     "Choose Demo Section:",
@@ -93,13 +121,13 @@ page = st.sidebar.selectbox(
         "📊 Bayesian Classification",
         "🎨 K-Means Clustering",
         "📈 Feature Analysis",
+        "⚖️ Algorithm Comparison",
         "🎓 Summary",
     ],
 )
 
-# Helper functions
 
-
+# Helper function to generate data
 @st.cache_data
 def generate_classification_data(n_samples=200, noise=0.1, random_state=42):
     X, y = make_classification(
@@ -127,7 +155,6 @@ def generate_cluster_data(n_samples=300, centers=4, random_state=42):
 
 
 # Overview Page
-
 if page == "🏠 Overview":
     st.markdown(
         '<h2 class="section-header">📋 Presentation Overview</h2>',
@@ -139,20 +166,20 @@ if page == "🏠 Overview":
     with col1:
         st.markdown(
             """
-    ### 🎯 Learning Objectives
-
+        ### 🎯 Learning Objectives
+        
         By the end of this presentation, you will understand:
-
+        
         ✅ **Decision Methods for Classification**
         - Nearest Neighbor Algorithm
         - Bayesian Decision Theory
         - When to use each approach
-
-        ✅ **Clustering Techniques**
+        
+        ✅ **Clustering Techniques** 
         - K-Means Algorithm
         - Unsupervised pattern discovery
         - Cluster validation methods
-
+        
         ✅ **Practical Considerations**
         - Feature selection strategies
         - Curse of dimensionality
@@ -163,22 +190,22 @@ if page == "🏠 Overview":
     with col2:
         st.markdown(
             """
-    ### 🔬 Interactive Features
-
+        ### 🔬 Interactive Features
+        
         This presentation includes:
-
+        
         🎮 **Real-time Algorithm Visualization**
         - Adjust parameters and see immediate results
         - Compare different approaches side-by-side
-
+        
         📊 **Performance Metrics**
         - Accuracy scores and validation
         - Visual performance comparisons
-
+        
         🎨 **Step-by-step Demonstrations**
         - Watch algorithms learn in real-time
         - Understand the decision-making process
-
+        
         📈 **Real-world Case Studies**
         - Fish classification example
         - Feature engineering insights
@@ -196,57 +223,56 @@ if page == "🏠 Overview":
     with col1:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>🎯 Nearest Neighbor</h3>
-        <p><strong>Type:</strong> Instance-based</p>
-        <p><strong>Complexity:</strong> O(n)</p>
-        <p><strong>Best for:</strong> Complex boundaries</p>
-    </div>
-    """,
+        <div class="metric-container">
+            <h3>🎯 Nearest Neighbor</h3>
+            <p><strong>Type:</strong> Instance-based</p>
+            <p><strong>Complexity:</strong> O(n)</p>
+            <p><strong>Best for:</strong> Complex boundaries</p>
+        </div>
+        """,
             unsafe_allow_html=True,
         )
 
     with col2:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>📊 Bayesian</h3>
-        <p><strong>Type:</strong> Probabilistic</p>
-        <p><strong>Complexity:</strong> O(1)</p>
-        <p><strong>Best for:</strong> Optimal decisions</p>
-    </div>
-    """,
+        <div class="metric-container">
+            <h3>📊 Bayesian</h3>
+            <p><strong>Type:</strong> Probabilistic</p>
+            <p><strong>Complexity:</strong> O(1)</p>
+            <p><strong>Best for:</strong> Optimal decisions</p>
+        </div>
+        """,
             unsafe_allow_html=True,
         )
 
     with col3:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>🎨 K-Means</h3>
-        <p><strong>Type:</strong> Centroid-based</p>
-        <p><strong>Complexity:</strong> O(k·n·i)</p>
-        <p><strong>Best for:</strong> Spherical clusters</p>
-    </div>
-    """,
+        <div class="metric-container">
+            <h3>🎨 K-Means</h3>
+            <p><strong>Type:</strong> Centroid-based</p>
+            <p><strong>Complexity:</strong> O(k·n·i)</p>
+            <p><strong>Best for:</strong> Spherical clusters</p>
+        </div>
+        """,
             unsafe_allow_html=True,
         )
 
     with col4:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>📈 Features</h3>
-        <p><strong>Rule:</strong> Start simple</p>
-        <p><strong>Optimal:</strong> Data-dependent</p>
-        <p><strong>Risk:</strong> Overfitting</p>
-    </div>
-    """,
+        <div class="metric-container">
+            <h3>📈 Features</h3>
+            <p><strong>Rule:</strong> Start simple</p>
+            <p><strong>Optimal:</strong> Data-dependent</p>
+            <p><strong>Risk:</strong> Overfitting</p>
+        </div>
+        """,
             unsafe_allow_html=True,
         )
 
 # Nearest Neighbor Page
-
 elif page == "🎯 Nearest Neighbor":
     st.markdown(
         '<h2 class="section-header">🎯 Nearest Neighbor Classification</h2>',
@@ -255,12 +281,12 @@ elif page == "🎯 Nearest Neighbor":
 
     st.markdown(
         """
-<div class="algorithm-info">
-    <h3>🔍 Algorithm Concept</h3>
-    <p><strong>Core Idea:</strong> "You are who your neighbors are!"</p>
-    <p>The algorithm classifies unknown samples by finding the closest training samples in feature space and assigning their class labels.</p>
-</div>
-""",
+    <div class="algorithm-info">
+        <h3>🔍 Algorithm Concept</h3>
+        <p><strong>Core Idea:</strong> "You are who your neighbors are!"</p>
+        <p>The algorithm classifies unknown samples by finding the closest training samples in feature space and assigning their class labels.</p>
+    </div>
+    """,
         unsafe_allow_html=True,
     )
 
@@ -352,32 +378,31 @@ elif page == "🎯 Nearest Neighbor":
     with st.expander("🔬 How K-NN Works - Step by Step"):
         st.markdown(
             """
-**Step 1: Calculate Distances**
-    ```python
-    distances = np.sqrt(np.sum((test_point - training_points)**2, axis=1))
-    ```
-
-    **Step 2: Find K Nearest Neighbors**
-    ```python
-    nearest_indices = np.argsort(distances)[:k]
-    ```
-
-    **Step 3: Majority Vote**
-    ```python
-    neighbor_classes = y[nearest_indices]
-    prediction = mode(neighbor_classes)
-    ```
-
-    **Key Characteristics:**
-    - ✅ Simple and intuitive
-    - ✅ No training phase required
-    - ❌ Sensitive to irrelevant features
-    - ❌ Computationally expensive for large datasets
-    """
+        **Step 1: Calculate Distances**
+        ```python
+        distances = np.sqrt(np.sum((test_point - training_points)**2, axis=1))
+        ```
+        
+        **Step 2: Find K Nearest Neighbors**
+        ```python
+        nearest_indices = np.argsort(distances)[:k]
+        ```
+        
+        **Step 3: Majority Vote**
+        ```python
+        neighbor_classes = y[nearest_indices]
+        prediction = mode(neighbor_classes)
+        ```
+        
+        **Key Characteristics:**
+        - ✅ Simple and intuitive
+        - ✅ No training phase required
+        - ❌ Sensitive to irrelevant features
+        - ❌ Computationally expensive for large datasets
+        """
         )
 
 # Bayesian Classification Page
-
 elif page == "📊 Bayesian Classification":
     st.markdown(
         '<h2 class="section-header">📊 Bayesian Decision Theory</h2>',
@@ -386,12 +411,12 @@ elif page == "📊 Bayesian Classification":
 
     st.markdown(
         """
-<div class="algorithm-info">
-    <h3>🤖 Mathematical Foundation</h3>
-    <p><strong>Bayes' Rule:</strong> P(Class|Features) = P(Features|Class) × P(Class) / P(Features)</p>
-    <p><strong>Decision Rule:</strong> Choose class with highest posterior probability (MAP - Maximum A Posteriori)</p>
-</div>
-""",
+    <div class="algorithm-info">
+        <h3>🧮 Mathematical Foundation</h3>
+        <p><strong>Bayes' Rule:</strong> P(Class|Features) = P(Features|Class) × P(Class) / P(Features)</p>
+        <p><strong>Decision Rule:</strong> Choose class with highest posterior probability (MAP - Maximum A Posteriori)</p>
+    </div>
+    """,
         unsafe_allow_html=True,
     )
 
@@ -547,27 +572,26 @@ elif page == "📊 Bayesian Classification":
     with st.expander("🧮 Bayesian Mathematics"):
         st.markdown(
             """
-**Bayes' Theorem Components:**
-
-    - **Prior P(Ci):** What we know before seeing data
-    - **Likelihood P(x|Ci):** Probability of features given class
-    - **Posterior P(Ci|x):** Updated probability after seeing features
-    - **Evidence P(x):** Normalizing constant
-
-    **Decision Rule (MAP):**
-    ```
-    Choose class j if P(Cj|x) = max_i P(Ci|x)
-    ```
-
-    **Why Bayesian is Optimal:**
-    - Minimizes expected classification error
-    - Incorporates prior knowledge
-    - Theoretically grounded in probability theory
-    """
+        **Bayes' Theorem Components:**
+        
+        - **Prior P(Ci):** What we know before seeing data
+        - **Likelihood P(x|Ci):** Probability of features given class
+        - **Posterior P(Ci|x):** Updated probability after seeing features
+        - **Evidence P(x):** Normalizing constant
+        
+        **Decision Rule (MAP):**
+        ```
+        Choose class j if P(Cj|x) = max_i P(Ci|x)
+        ```
+        
+        **Why Bayesian is Optimal:**
+        - Minimizes expected classification error
+        - Incorporates prior knowledge
+        - Theoretically grounded in probability theory
+        """
         )
 
 # K-Means Clustering Page
-
 elif page == "🎨 K-Means Clustering":
     st.markdown(
         '<h2 class="section-header">🎨 K-Means Clustering Algorithm</h2>',
@@ -576,12 +600,12 @@ elif page == "🎨 K-Means Clustering":
 
     st.markdown(
         """
-<div class="algorithm-info">
-    <h3>🎯 Unsupervised Learning</h3>
-    <p><strong>Goal:</strong> Group similar data points without knowing true labels</p>
-    <p><strong>Method:</strong> Iteratively update cluster centers to minimize within-cluster variance</p>
-</div>
-""",
+    <div class="algorithm-info">
+        <h3>🎯 Unsupervised Learning</h3>
+        <p><strong>Goal:</strong> Group similar data points without knowing true labels</p>
+        <p><strong>Method:</strong> Iteratively update cluster centers to minimize within-cluster variance</p>
+    </div>
+    """,
         unsafe_allow_html=True,
     )
 
@@ -596,17 +620,20 @@ elif page == "🎨 K-Means Clustering":
         cluster_std = st.slider("Cluster Spread", 0.5, 2.5, 1.0)
 
     # Control buttons
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
 
     with col1:
         if st.button("🎲 Generate New Data"):
-            st.rerun()
+            st.experimental_rerun()
 
     with col2:
-        show_centroids = st.checkbox("Show Centroids", value=True)
+        step_by_step = st.checkbox("Step-by-step Animation")
 
     with col3:
-        show_labels = st.checkbox("Show Cluster Labels", value=True)
+        show_centroids = st.checkbox("Show Centroids", value=True)
+
+    with col4:
+        show_history = st.checkbox("Show Centroid History")
 
     # Generate clustering data
     X_cluster = generate_cluster_data(n_samples_cluster, 4, 42)
@@ -629,8 +656,7 @@ elif page == "🎨 K-Means Clustering":
                 y=X_cluster[mask, 1],
                 mode="markers",
                 marker=dict(size=8, color=colors[i % len(colors)], opacity=0.7),
-                name=f"Cluster {i + 1}" if show_labels else "",
-                showlegend=show_labels,
+                name=f"Cluster {i + 1}",
                 hovertemplate="Feature 1: %{x:.2f}<br>Feature 2: %{y:.2f}<extra></extra>",
             )
         )
@@ -683,38 +709,37 @@ elif page == "🎨 K-Means Clustering":
     with st.expander("🔄 K-Means Algorithm Steps"):
         st.markdown(
             """
-**Step 1: Initialize**
-    ```python
-    centroids = random_initialization(k)
-    ```
-
-    **Step 2: Assign Points**
-    ```python
-    for each point:
-        assign to nearest centroid
-    ```
-
-    **Step 3: Update Centroids**
-    ```python
-    for each cluster:
-        centroid = mean(cluster_points)
-    ```
-
-    **Step 4: Repeat**
-    ```python
-    while not converged:
-        repeat steps 2-3
-    ```
-
-    **Convergence Criteria:**
-    - Centroids don't move significantly
-    - Maximum iterations reached
-    - Assignments don't change
-    """
+        **Step 1: Initialize**
+        ```python
+        centroids = random_initialization(k)
+        ```
+        
+        **Step 2: Assign Points**
+        ```python
+        for each point:
+            assign to nearest centroid
+        ```
+        
+        **Step 3: Update Centroids**
+        ```python
+        for each cluster:
+            centroid = mean(cluster_points)
+        ```
+        
+        **Step 4: Repeat**
+        ```python
+        while not converged:
+            repeat steps 2-3
+        ```
+        
+        **Convergence Criteria:**
+        - Centroids don't move significantly
+        - Maximum iterations reached
+        - Assignments don't change
+        """
         )
 
 # Feature Analysis Page
-
 elif page == "📈 Feature Analysis":
     st.markdown(
         '<h2 class="section-header">📈 Feature Dimensionality Analysis</h2>',
@@ -723,12 +748,12 @@ elif page == "📈 Feature Analysis":
 
     st.markdown(
         """
-<div class="algorithm-info">
-    <h3>⚠️ The Curse of Dimensionality</h3>
-    <p><strong>Problem:</strong> As feature dimensions increase, performance may decrease due to sparse data</p>
-    <p><strong>Solution:</strong> Find optimal number of features through experimentation</p>
-</div>
-""",
+    <div class="algorithm-info">
+        <h3>⚠️ The Curse of Dimensionality</h3>
+        <p><strong>Problem:</strong> As feature dimensions increase, performance may decrease due to sparse data</p>
+        <p><strong>Solution:</strong> Find optimal number of features through experimentation</p>
+    </div>
+    """,
         unsafe_allow_html=True,
     )
 
@@ -860,132 +885,404 @@ elif page == "📈 Feature Analysis":
             st.metric("Training Size", training_size)
             st.metric("CV Folds", cv_folds)
 
-# Summary Page
+# Algorithm Comparison Page
+elif page == "⚖️ Algorithm Comparison":
+    st.markdown(
+        '<h2 class="section-header">⚖️ Algorithm Performance Comparison</h2>',
+        unsafe_allow_html=True,
+    )
 
+    st.markdown(
+        """
+    <div class="algorithm-info">
+        <h3>🔍 Comprehensive Evaluation</h3>
+        <p>Compare different algorithms across various scenarios to understand their strengths and weaknesses</p>
+    </div>
+    """,
+        unsafe_allow_html=True,
+    )
+
+    # Scenario selection
+    col1, col2 = st.columns(2)
+
+    with col1:
+        scenario = st.selectbox(
+            "Choose Scenario:",
+            [
+                "Balanced Classes",
+                "Imbalanced Classes",
+                "High Noise",
+                "Small Dataset",
+                "High Dimensional",
+            ],
+        )
+
+    with col2:
+        metrics_to_show = st.multiselect(
+            "Metrics to Display:",
+            ["Accuracy", "Precision", "Recall", "F1-Score", "Training Time"],
+            default=["Accuracy", "Training Time"],
+        )
+
+    if st.button("🔄 Run Comparison"):
+        # Generate data based on scenario
+        if scenario == "Balanced Classes":
+            X_comp, y_comp = make_classification(
+                n_samples=400,
+                n_features=10,
+                n_informative=5,
+                weights=[0.5, 0.5],
+                random_state=42,
+            )
+        elif scenario == "Imbalanced Classes":
+            X_comp, y_comp = make_classification(
+                n_samples=400,
+                n_features=10,
+                n_informative=5,
+                weights=[0.9, 0.1],
+                random_state=42,
+            )
+        elif scenario == "High Noise":
+            X_comp, y_comp = make_classification(
+                n_samples=400,
+                n_features=10,
+                n_informative=3,
+                n_redundant=2,
+                n_clusters_per_class=1,
+                flip_y=0.2,
+                random_state=42,
+            )
+        elif scenario == "Small Dataset":
+            X_comp, y_comp = make_classification(
+                n_samples=100, n_features=5, n_informative=3, random_state=42
+            )
+        else:  # High Dimensional
+            X_comp, y_comp = make_classification(
+                n_samples=200, n_features=50, n_informative=10, random_state=42
+            )
+
+        # Define algorithms
+        algorithms = {
+            "1-NN": KNeighborsClassifier(n_neighbors=1),
+            "5-NN": KNeighborsClassifier(n_neighbors=5),
+            "10-NN": KNeighborsClassifier(n_neighbors=10),
+            "Naive Bayes": GaussianNB(),
+        }
+
+        # Evaluate algorithms
+        results = []
+
+        progress_bar = st.progress(0)
+
+        for i, (name, algorithm) in enumerate(algorithms.items()):
+            # Measure training time
+            import time
+
+            start_time = time.time()
+
+            # Cross-validation
+            cv_scores = cross_val_score(
+                algorithm, X_comp, y_comp, cv=5, scoring="accuracy"
+            )
+
+            end_time = time.time()
+            training_time = (end_time - start_time) * 1000  # in milliseconds
+
+            results.append(
+                {
+                    "Algorithm": name,
+                    "Accuracy": cv_scores.mean(),
+                    "Accuracy_std": cv_scores.std(),
+                    "Training Time": training_time,
+                }
+            )
+
+            progress_bar.progress((i + 1) / len(algorithms))
+
+        # Create comparison visualization
+        df_results = pd.DataFrame(results)
+
+        # Accuracy comparison
+        fig_acc = go.Figure()
+
+        fig_acc.add_trace(
+            go.Bar(
+                x=df_results["Algorithm"],
+                y=df_results["Accuracy"],
+                error_y=dict(
+                    type="data", array=df_results["Accuracy_std"], visible=True
+                ),
+                marker_color=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"],
+                text=[f"{acc:.3f}" for acc in df_results["Accuracy"]],
+                textposition="auto",
+            )
+        )
+
+        fig_acc.update_layout(
+            title=f"Algorithm Accuracy Comparison - {scenario}",
+            xaxis_title="Algorithm",
+            yaxis_title="Cross-validation Accuracy",
+            height=400,
+        )
+
+        st.plotly_chart(fig_acc, use_container_width=True)
+
+        # Training time comparison
+        fig_time = go.Figure()
+
+        fig_time.add_trace(
+            go.Bar(
+                x=df_results["Algorithm"],
+                y=df_results["Training Time"],
+                marker_color=["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"],
+                text=[f"{time:.1f}ms" for time in df_results["Training Time"]],
+                textposition="auto",
+            )
+        )
+
+        fig_time.update_layout(
+            title="Training Time Comparison",
+            xaxis_title="Algorithm",
+            yaxis_title="Training Time (ms)",
+            height=400,
+        )
+
+        st.plotly_chart(fig_time, use_container_width=True)
+
+        # Results table
+        st.markdown("### 📊 Detailed Results")
+        st.dataframe(df_results.round(4), use_container_width=True)
+
+        # Insights based on scenario
+        st.markdown("### 💡 Key Insights")
+
+        if scenario == "Balanced Classes":
+            st.info(
+                "🎯 All algorithms perform well with balanced data. Choice depends on interpretability and speed requirements."
+            )
+        elif scenario == "Imbalanced Classes":
+            st.warning(
+                "⚠️ Be careful with accuracy metrics on imbalanced data. Consider precision, recall, and F1-score."
+            )
+        elif scenario == "High Noise":
+            st.info(
+                "🔊 Higher K values in K-NN help reduce noise sensitivity. Bayesian methods are also robust."
+            )
+        elif scenario == "Small Dataset":
+            st.warning(
+                "📉 With limited data, simpler models (higher K, Naive Bayes) often perform better."
+            )
+        else:  # High Dimensional
+            st.error(
+                "📈 Curse of dimensionality affects K-NN significantly. Feature selection becomes crucial."
+            )
+
+# Summary Page
 elif page == "🎓 Summary":
     st.markdown(
         '<h2 class="section-header">🎓 Presentation Summary</h2>',
         unsafe_allow_html=True,
     )
 
-    st.markdown(
-        """
-<div class="algorithm-info">
-    <h3>🎯 Key Takeaways</h3>
-    <p><strong>Decision Methods:</strong> Choose K-NN for complex boundaries, Bayesian for optimal decisions</p>
-    <p><strong>Clustering:</strong> K-Means finds natural groupings in unlabeled data</p>
-    <p><strong>Features:</strong> Start simple, add complexity only when needed</p>
-</div>
-""",
-        unsafe_allow_html=True,
-    )
-
+    # Key takeaways
     col1, col2 = st.columns(2)
 
     with col1:
         st.markdown(
             """
-    ### 🎯 Algorithm Comparison
-
-        | Algorithm | Type | Pros | Cons |
-        |-----------|------|------|------|
-        | K-NN | Instance-based | Simple, no training | Slow, sensitive to noise |
-        | Bayesian | Probabilistic | Optimal, interpretable | Assumes independence |
-        | K-Means | Centroid-based | Fast, scalable | Spherical clusters only |
-
-        **When to Use Each:**
-        - **K-NN:** Complex decision boundaries, small datasets
-        - **Bayesian:** Optimal decisions, interpretable results
-        - **K-Means:** Exploratory analysis, data preprocessing
+        ### 🎯 Classification Methods
+        
+        **Nearest Neighbor:**
+        - ✅ Simple and intuitive
+        - ✅ No assumptions about data distribution
+        - ❌ Sensitive to irrelevant features
+        - ❌ Computationally expensive
+        
+        **Bayesian Classification:**
+        - ✅ Theoretically optimal (MAP)
+        - ✅ Incorporates prior knowledge
+        - ✅ Fast prediction
+        - ❌ Assumes feature independence (Naive Bayes)
         """
         )
 
     with col2:
         st.markdown(
             """
-    ### 🔬 Best Practices
-
-        **Feature Engineering:**
-        - Start with domain knowledge
-        - Remove irrelevant features
-        - Normalize when necessary
-
-        **Model Selection:**
-        - Cross-validate performance
-        - Consider computational cost
-        - Balance accuracy vs interpretability
-
-        **Practical Tips:**
-        - Always visualize your data first
-        - Use multiple algorithms for comparison
-        - Validate assumptions carefully
+        ### 🎨 Clustering & Features
+        
+        **K-Means Clustering:**
+        - ✅ Fast and scalable
+        - ✅ Works well with spherical clusters
+        - ❌ Need to specify K
+        - ❌ Sensitive to initialization
+        
+        **Feature Selection:**
+        - 🎯 More features ≠ Better performance
+        - 📊 Optimal number depends on data size
+        - ⚠️ Curse of dimensionality is real
+        - 🔍 Cross-validation is essential
         """
         )
 
-    # Final metrics
+    # Decision flowchart
     st.markdown(
-        '<h3 class="section-header">📊 Performance Summary</h3>', unsafe_allow_html=True
+        '<h3 class="section-header">🗺️ Algorithm Selection Guide</h3>',
+        unsafe_allow_html=True,
     )
 
-    col1, col2, col3, col4 = st.columns(4)
+    st.markdown(
+        """
+    ```
+    📊 ALGORITHM SELECTION FLOWCHART
+    
+    ❓ Do you have labeled data?
+    ├── Yes (Supervised Learning)
+    │   ├── 🎯 Small dataset + Simple boundary → Naive Bayes
+    │   ├── 🎯 Large dataset + Complex boundary → K-NN
+    │   ├── 🎯 Need probability estimates → Bayesian methods
+    │   └── 🎯 Speed is critical → Naive Bayes
+    │
+    └── No (Unsupervised Learning)
+        ├── 🎨 Spherical clusters expected → K-Means
+        ├── 🎨 Arbitrary shapes + noise → DBSCAN
+        └── 🎨 Hierarchical structure → Agglomerative
+    
+    🎲 FEATURE SELECTION STRATEGY
+    
+    ❓ How much training data do you have?
+    ├── Small (< 100 samples) → Use fewer features (2-5)
+    ├── Medium (100-1000) → Moderate features (5-15)
+    └── Large (> 1000) → More features possible (10-50+)
+    
+    💡 Always validate with cross-validation!
+    ```
+    """
+    )
+
+    # Performance summary
+    st.markdown(
+        '<h3 class="section-header">📈 Performance Summary</h3>', unsafe_allow_html=True
+    )
+
+    # Create a summary comparison chart
+    algorithms = ["1-NN", "5-NN", "Naive Bayes", "K-Means"]
+    characteristics = {
+        "Speed": [2, 2, 5, 4],
+        "Accuracy": [4, 4, 4, 3],
+        "Interpretability": [5, 5, 4, 3],
+        "Scalability": [2, 2, 5, 4],
+        "Robustness": [2, 4, 4, 3],
+    }
+
+    fig = go.Figure()
+
+    colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
+
+    for i, (char, values) in enumerate(characteristics.items()):
+        fig.add_trace(
+            go.Scatterpolar(
+                r=values,
+                theta=algorithms,
+                fill="tonext" if i > 0 else "toself",
+                name=char,
+                line_color=colors[i],
+            )
+        )
+
+    fig.update_layout(
+        polar=dict(radialaxis=dict(visible=True, range=[0, 5])),
+        showlegend=True,
+        title="Algorithm Characteristics Radar Chart",
+        height=500,
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Final recommendations
+    st.markdown(
+        '<h3 class="section-header">🎯 Final Recommendations</h3>',
+        unsafe_allow_html=True,
+    )
+
+    col1, col2, col3 = st.columns(3)
 
     with col1:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>🎯 K-NN</h3>
-        <p><strong>Typical Accuracy:</strong> 85-95%</p>
-        <p><strong>Best K:</strong> 3-5</p>
-        <p><strong>Use Case:</strong> Complex patterns</p>
-    </div>
-    """,
-            unsafe_allow_html=True,
+        **🚀 Getting Started:**
+        1. Start with simple algorithms
+        2. Understand your data first
+        3. Use cross-validation
+        4. Consider computational constraints
+        """
         )
 
     with col2:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>📊 Bayesian</h3>
-        <p><strong>Typical Accuracy:</strong> 80-90%</p>
-        <p><strong>Assumption:</strong> Independence</p>
-        <p><strong>Use Case:</strong> Optimal decisions</p>
-    </div>
-    """,
-            unsafe_allow_html=True,
+        **🔧 Best Practices:**
+        1. Feature engineering matters
+        2. Handle missing data properly
+        3. Scale features when needed
+        4. Monitor for overfitting
+        """
         )
 
     with col3:
         st.markdown(
             """
-<div class="metric-container">
-        <h3>🎨 K-Means</h3>
-        <p><strong>Silhouette:</strong> 0.3-0.7</p>
-        <p><strong>Best K:</strong> Elbow method</p>
-        <p><strong>Use Case:</strong> Data exploration</p>
-    </div>
-    """,
-            unsafe_allow_html=True,
-        )
-
-    with col4:
-        st.markdown(
-            """
-<div class="metric-container">
-        <h3>📈 Features</h3>
-        <p><strong>Rule:</strong> Less is more</p>
-        <p><strong>Validation:</strong> Cross-validation</p>
-        <p><strong>Risk:</strong> Overfitting</p>
-    </div>
-    """,
-            unsafe_allow_html=True,
-        )
-
-    st.markdown(
+        **🎓 Advanced Topics:**
+        1. Ensemble methods
+        2. Deep learning approaches
+        3. Online learning algorithms
+        4. Automated ML pipelines
         """
-    ---
-    **Thank you for exploring Pattern Recognition with us! 🎓**
+        )
 
-    *This interactive demo demonstrates key concepts in decision methods and clustering algorithms.*
+    # Interactive conclusion
+    st.markdown(
+        '<h3 class="section-header">🎉 Interactive Demo Complete!</h3>',
+        unsafe_allow_html=True,
+    )
+
+    st.success(
+        """
+    🏆 **Congratulations!** You've explored all the key concepts in pattern recognition:
+    
+    ✅ **Decision Methods:** Nearest Neighbor vs Bayesian approaches
+    ✅ **Clustering:** K-means algorithm and evaluation
+    ✅ **Feature Analysis:** Dimensionality and selection strategies
+    ✅ **Practical Comparison:** When to use which algorithm
+    
+    💡 **Next Steps:** Apply these concepts to your own datasets and research projects!
     """
     )
+
+    # Download code button
+    if st.button("📥 Download Complete Code Package"):
+        st.info(
+            """
+        📦 **Code Package Includes:**
+        - Complete Jupyter notebook with all demonstrations
+        - Streamlit application source code
+        - Sample datasets for practice
+        - Presentation slides template
+        - Algorithm implementation examples
+        
+        Contact your instructor for the download link!
+        """
+        )
+
+# Footer
+st.markdown("---")
+st.markdown(
+    """
+<div style='text-align: center; color: #666; padding: 2rem;'>
+    <h4>🤖 Pattern Recognition Interactive Demo</h4>
+    <p>Master's Course Presentation | Created for Academic Excellence</p>
+    <p><em>Use the sidebar to navigate between different algorithm demonstrations</em></p>
+</div>
+""",
+    unsafe_allow_html=True,
+)
