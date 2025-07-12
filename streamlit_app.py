@@ -2,6 +2,14 @@
 # Pattern Recognition Interactive Presentation
 # Run with: streamlit run streamlit_app.py
 
+"""
+Pattern Recognition Interactive Demo
+Copyright (c) 2025 [TETSUROU KIZAKI]
+
+Licensed under the MIT License.
+See LICENSE file in the project root for full license information.
+"""
+
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
