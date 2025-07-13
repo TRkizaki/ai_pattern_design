@@ -7,6 +7,11 @@
 
 This repository contains a comprehensive interactive presentation covering fundamental pattern recognition algorithms and clustering techniques. Built for master’s level academic presentation with real-time demonstrations and professional visualizations.
 
+**Supervision:** Professor [ANIS SEFIDANIS]
+**Course:** [IST21E02 - Artificial Inteligence and Expert Systems]
+**Institution:** [University of Information Science and Technology "St. Poul the Apostile"]
+**Academic Year:** [2025/2026]
+
 ## Covered Topics
 
 ### **Classification Methods**
