@@ -30,6 +30,11 @@ This repository contains a comprehensive interactive presentation covering funda
 - **Algorithm Comparison** - Performance analysis across different scenarios
 - **Selection Guidelines** - When to use which approach
 
+### Using Streamlit app
+```
+streamlit run streamlit_app.py
+```
+
 <img width="1167" height="736" alt="Screenshot 2025-07-16 at 17 44 11" src="https://github.com/user-attachments/assets/4597bd36-6aff-4408-82ba-023f8abdf155" />
 <img width="1161" height="666" alt="Screenshot 2025-07-16 at 17 44 46" src="https://github.com/user-attachments/assets/3a799a66-831b-4817-9284-9ab9d6165eaf" />
 <img width="1159" height="726" alt="Screenshot 2025-07-16 at 17 45 03" src="https://github.com/user-attachments/assets/340b47e4-4edf-4674-80ea-6bf92267675c" />
@@ -38,6 +43,11 @@ This repository contains a comprehensive interactive presentation covering funda
 <img width="1207" height="765" alt="Screenshot 2025-07-16 at 17 46 58" src="https://github.com/user-attachments/assets/38730e14-3a60-41e8-8286-57767bcc4945" />
 <img width="970" height="714" alt="Screenshot 2025-07-16 at 17 47 40" src="https://github.com/user-attachments/assets/4a9a74e3-40e7-4785-a024-08a031cae478" />
 <img width="1121" height="745" alt="Screenshot 2025-07-16 at 17 48 01" src="https://github.com/user-attachments/assets/e43881aa-ec36-4983-a7a2-5d2c3ee9febe" />
+
+### Using HTML demo
+```
+open interactive_demo.html
+```
 
 ## Quick Start
 
