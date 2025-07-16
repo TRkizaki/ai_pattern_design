@@ -1,4 +1,4 @@
-# 最小限の依存関係（Python 3.12対応）
+# minimum dependencies（Python 3.12）
 
 streamlit>=1.29.0
 plotly>=5.17.0
@@ -7,7 +7,7 @@ pandas>=2.0.3
 numpy>=1.24.3
 matplotlib>=3.7.2
 
-# オプション（Jupyter使用時のみ）
+# Option（only for using Jupyter）
 
 # jupyter>=1.0.0
 
