@@ -71,7 +71,7 @@ conda create -n ai_pattern_design python=3.11 -y
 conda activate ai_pattern_design
 
 # 4. Install dependencies
-conda install -c conda-forge jupyter streamlit plotly scikit-learn pandas numpy matplotlib -y
+conda install -c conda-forge jupyter streamlit plotly scikit-learn pandas numpy -y
 ``i
 
 ### **Launch Presentation**
@@ -191,7 +191,6 @@ ai_pattern_design/
 
 - **Streamlit caching** - Fast data generation
 - **Plotly rendering** - Hardware-accelerated graphics
-- **Matplotlib-free** - Reduced startup time
 
 ##  Educational Outcomes
 
